@@ -1,0 +1,32 @@
+{
+  "name": "sitemap-verifier",
+  "version": "1.0.0",
+  "description": "Automated sitemap URL verification bot to detect broken links and HTTP errors",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
+    "dev": "node src/index.js"
+  },
+  "keywords": ["sitemap", "bot", "verification", "broken-links", "seo"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "xml2js": "^0.6.2",
+    "p-limit": "^5.0.0",
+    "winston": "^3.11.0",
+    "winston-daily-rotate-file": "^4.7.1",
+    "chalk": "^4.1.2",
+    "cli-progress": "^3.12.0",
+    "handlebars": "^4.7.7",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
