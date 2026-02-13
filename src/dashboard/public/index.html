@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sitemap Verification Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab-btn {
+            padding: 10px 20px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-btn:hover {
+            color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .reports-list {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .report-card {
+            border: 1px solid #eee;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .report-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .report-info h3 {
+            color: #333;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .report-info p {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .report-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 11px;
+        }
+
+        .report-viewer {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 20px;
+        }
+
+        .results-table thead {
+            background: #f5f5f5;
+        }
+
+        .results-table th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .results-table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .results-table tr:hover {
+            background: #fafafa;
+        }
+
+        .status-200 { color: #22c55e; font-weight: 600; }
+        .status-301 { color: #3b82f6; }
+        .status-404 { color: #f59e0b; font-weight: 600; }
+        .status-500 { color: #ef4444; font-weight: 600; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 30px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Sitemap Verification Dashboard</h1>
+            <p class="subtitle">Monitor and view sitemap verification reports</p>
+
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('reports')">Reports</button>
+                <button class="tab-btn" onclick="switchTab('viewer')">View Report</button>
+                <button class="tab-btn" onclick="switchTab('api')">API</button>
+            </div>
+        </header>
+
+        <!-- Reports List Tab -->
+        <div id="reports" class="tab-content active">
+            <div class="reports-list">
+                <h2 style="margin-bottom: 20px; color: #333;">Generated Reports</h2>
+                <div id="reportsList" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading reports...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- View Report Tab -->
+        <div id="viewer" class="tab-content">
+            <div class="report-viewer">
+                <h2 style="margin-bottom: 20px; color: #333;">View Report</h2>
+
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 10px; color: #333;">Select Report:</label>
+                    <select id="reportSelect" onchange="loadReport()" style="padding: 10px; border: 1px solid #ddd; border-radius: 4px; width: 100%; max-width: 400px;">
+                        <option value="">-- Choose a report --</option>
+                    </select>
+                </div>
+
+                <div id="reportContent">
+                    <div class="empty-state">
+                        <h3>No report selected</h3>
+                        <p>Select a report from the dropdown to view details</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- API Tab -->
+        <div id="api" class="tab-content">
+            <div class="report-viewer">
+                <h2 style="margin-bottom: 20px; color: #333;">API Documentation</h2>
+
+                <h3 style="margin-top: 20px; color: #333;">Endpoints</h3>
+
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin: 10px 0; font-family: monospace; font-size: 12px;">
+                    <p><strong>POST /api/verify</strong></p>
+                    <p>Start a new sitemap verification</p>
+                    <p style="margin-top: 10px;">Request body:</p>
+                    <pre>{
+  "sitemapUrl": "https://example.com/sitemap.xml",
+  "format": "all"
+}</pre>
+                </div>
+
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin: 10px 0; font-family: monospace; font-size: 12px;">
+                    <p><strong>GET /api/verify/:checkId</strong></p>
+                    <p>Get verification status and results</p>
+                </div>
+
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin: 10px 0; font-family: monospace; font-size: 12px;">
+                    <p><strong>GET /api/verify/:checkId/report/:format</strong></p>
+                    <p>Download report (formats: html, json, pdf, csv, markdown)</p>
+                </div>
+
+                <div style="background: #f5f5f5; padding: 15px; border-radius: 4px; margin: 10px 0; font-family: monospace; font-size: 12px;">
+                    <p><strong>GET /api/active-checks</strong></p>
+                    <p>List all active verifications</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Sitemap Verification Bot | Dashboard v1.0</p>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            // Load reports list if switching to reports tab
+            if (tabName === 'reports' || tabName === 'viewer') {
+                loadReportsList();
+            }
+        }
+
+        function loadReportsList() {
+            fetch('/api/reports')
+                .then(r => r.json())
+                .then(data => {
+                    const list = document.getElementById('reportsList');
+                    const select = document.getElementById('reportSelect');
+
+                    if (data.reports.length === 0) {
+                        list.innerHTML = `
+                            <div class="empty-state">
+                                <h3>No reports found</h3>
+                                <p>Run the bot to generate reports</p>
+                            </div>
+                        `;
+                        select.innerHTML = '<option value="">-- No reports available --</option>';
+                        return;
+                    }
+
+                    // Update list
+                    list.innerHTML = data.reports.map(report => `
+                        <div class="report-card">
+                            <div class="report-info">
+                                <h3>${report.filename}</h3>
+                                <p>Created: ${new Date(report.created).toLocaleString()}</p>
+                                <p>Size: ${(report.size / 1024).toFixed(2)} KB</p>
+                            </div>
+                            <div class="report-actions">
+                                ${report.filename.endsWith('.json') ? `
+                                    <button class="btn btn-primary btn-small" onclick="viewReport('${report.filename}')">
+                                        View
+                                    </button>
+                                ` : ''}
+                                <a href="/download/${report.filename}" class="btn btn-secondary btn-small">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    `).join('');
+
+                    // Update select
+                    select.innerHTML = '<option value="">-- Choose a report --</option>' +
+                        data.reports
+                            .filter(r => r.filename.endsWith('.json'))
+                            .map(r => `<option value="${r.filename}">${r.filename}</option>`)
+                            .join('');
+                })
+                .catch(err => {
+                    console.error('Error loading reports:', err);
+                    document.getElementById('reportsList').innerHTML = `
+                        <div class="error">Error loading reports: ${err.message}</div>
+                    `;
+                });
+        }
+
+        function viewReport(filename) {
+            document.getElementById('reportSelect').value = filename;
+            loadReport();
+            switchTab('viewer');
+        }
+
+        function loadReport() {
+            const filename = document.getElementById('reportSelect').value;
+            const content = document.getElementById('reportContent');
+
+            if (!filename) {
+                content.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No report selected</h3>
+                        <p>Select a report from the dropdown to view details</p>
+                    </div>
+                `;
+                return;
+            }
+
+            content.innerHTML = '<div class="loading"><div class="spinner"></div><p>Loading report...</p></div>';
+
+            fetch(`/api/report/${filename}`)
+                .then(r => r.json())
+                .then(report => {
+                    content.innerHTML = `
+                        <h3 style="margin-bottom: 10px; color: #333;">Report: ${filename}</h3>
+                        <p style="color: #666; font-size: 12px; margin-bottom: 20px;">Generated: ${report.metadata.generatedAt}</p>
+
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-value">${report.summary.totalUrls}</div>
+                                <div class="stat-label">Total URLs</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${report.summary.successful}</div>
+                                <div class="stat-label">Successful</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${report.summary.failed}</div>
+                                <div class="stat-label">Failed</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-value">${report.summary.successRate}%</div>
+                                <div class="stat-label">Success Rate</div>
+                            </div>
+                        </div>
+
+                        <h4 style="margin-top: 30px; color: #333;">Status Code Distribution</h4>
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>Status Code</th>
+                                    <th>Count</th>
+                                    <th>Percentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Object.entries(report.statusCodeDistribution)
+                                    .sort((a, b) => parseInt(b[0]) - parseInt(a[0]))
+                                    .map(([code, count]) => {
+                                        const percentage = ((count / report.summary.totalUrls) * 100).toFixed(1);
+                                        return `
+                                            <tr>
+                                                <td class="status-${code}">${code}</td>
+                                                <td>${count}</td>
+                                                <td>${percentage}%</td>
+                                            </tr>
+                                        `;
+                                    })
+                                    .join('')}
+                            </tbody>
+                        </table>
+
+                        <h4 style="margin-top: 30px; color: #333;">Sample Results (First 20)</h4>
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>URL</th>
+                                    <th>Status</th>
+                                    <th>Response Time</th>
+                                    <th>Attempts</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${report.results.slice(0, 20).map(r => `
+                                    <tr>
+                                        <td style="word-break: break-all; max-width: 300px; font-size: 11px;">${r.url}</td>
+                                        <td class="status-${r.statusCode}">${r.statusCode}</td>
+                                        <td>${r.responseTime}ms</td>
+                                        <td>${r.attempts}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        ${report.results.length > 20 ? `<p style="margin-top: 10px; color: #999; font-size: 12px;">... and ${report.results.length - 20} more URLs</p>` : ''}
+                    `;
+                })
+                .catch(err => {
+                    content.innerHTML = `<div class="error">Error loading report: ${err.message}</div>`;
+                });
+        }
+
+        // Load reports on page load
+        window.addEventListener('load', () => {
+            loadReportsList();
+        });
+    </script>
+</body>
+</html>

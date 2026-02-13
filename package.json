@@ -5,6 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
+    "api": "node src/api/server.js",
+    "dashboard": "node src/dashboard/server.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
     "dev": "node src/index.js"
@@ -21,7 +23,12 @@
     "chalk": "^4.1.2",
     "cli-progress": "^3.12.0",
     "handlebars": "^4.7.7",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-static-gzip": "^2.1.7",
+    "cors": "^2.8.5",
+    "pdfkit": "^0.13.0",
+    "papaparse": "^5.4.1"
   },
   "devDependencies": {
     "jest": "^29.7.0"
